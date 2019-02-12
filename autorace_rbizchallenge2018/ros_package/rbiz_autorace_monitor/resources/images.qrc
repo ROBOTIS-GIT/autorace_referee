@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/icon.png</file>
+        <file>images/ROBOTIS_LOGO_SymbolMarkSlogan_EN.png</file>
+        <file>images/TURTLEBOT3 AUTORACE_LOGO.png</file>
+    </qresource>
+</RCC>

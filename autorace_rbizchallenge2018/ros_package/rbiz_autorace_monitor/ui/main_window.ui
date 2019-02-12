@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindowDesign</class>
+ <widget class="QMainWindow" name="MainWindowDesign">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1796</width>
+    <height>1030</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QRosApp</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../resources/images.qrc">
+    <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
+  </property>
+  <property name="locale">
+   <locale language="English" country="Australia"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout">
+    <item>
+     <widget class="QWidget" name="widget1" native="true">
+      <widget class="QWidget" name="widget" native="true">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>270</y>
+         <width>1761</width>
+         <height>571</height>
+        </rect>
+       </property>
+       <widget class="QLCDNumber" name="mission_ms_2">
+        <property name="geometry">
+         <rect>
+          <x>1380</x>
+          <y>160</y>
+          <width>200</width>
+          <height>350</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="mission_sec_1">
+        <property name="geometry">
+         <rect>
+          <x>660</x>
+          <y>160</y>
+          <width>200</width>
+          <height>350</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="mission_min_1">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>160</y>
+          <width>200</width>
+          <height>350</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="mission_sec_2">
+        <property name="geometry">
+         <rect>
+          <x>860</x>
+          <y>160</y>
+          <width>200</width>
+          <height>350</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="mission_ms_1">
+        <property name="geometry">
+         <rect>
+          <x>1180</x>
+          <y>160</y>
+          <width>200</width>
+          <height>350</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="mission_min_2">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>160</y>
+          <width>200</width>
+          <height>350</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>550</x>
+          <y>130</y>
+          <width>51</width>
+          <height>301</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>184</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label3">
+        <property name="geometry">
+         <rect>
+          <x>1100</x>
+          <y>130</y>
+          <width>51</width>
+          <height>301</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>184</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>50</y>
+          <width>541</width>
+          <height>121</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>40</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Mission Time</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ReadyTime" native="true">
+       <property name="geometry">
+        <rect>
+         <x>-70</x>
+         <y>0</y>
+         <width>1781</width>
+         <height>331</height>
+        </rect>
+       </property>
+       <widget class="QLCDNumber" name="ready_ms_2">
+        <property name="geometry">
+         <rect>
+          <x>1020</x>
+          <y>130</y>
+          <width>121</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="ready_sec_1">
+        <property name="geometry">
+         <rect>
+          <x>550</x>
+          <y>130</y>
+          <width>121</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="ready_min_1">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>130</y>
+          <width>121</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="ready_sec_2">
+        <property name="geometry">
+         <rect>
+          <x>670</x>
+          <y>130</y>
+          <width>121</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="ready_ms_1">
+        <property name="geometry">
+         <rect>
+          <x>900</x>
+          <y>130</y>
+          <width>121</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>490</x>
+          <y>90</y>
+          <width>51</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>184</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:72pt;&quot;&gt;:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QLCDNumber" name="ready_min_2">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>130</y>
+          <width>121</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>37</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="digitCount">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>830</x>
+          <y>90</y>
+          <width>51</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>184</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:72pt;&quot;&gt;:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>510</x>
+          <y>50</y>
+          <width>331</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>32</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Setup Time</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton">
+        <property name="geometry">
+         <rect>
+          <x>1320</x>
+          <y>200</y>
+          <width>351</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>40</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Initialization</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>790</y>
+         <width>611</width>
+         <height>191</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="../resources/images.qrc">:/images/ROBOTIS_LOGO_SymbolMarkSlogan_EN.png</pixmap>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>940</x>
+         <y>790</y>
+         <width>601</width>
+         <height>201</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="../resources/images.qrc">:/images/TURTLEBOT3 AUTORACE_LOGO.png</pixmap>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1796</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="action_Quit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="action_Preferences">
+   <property name="text">
+    <string>&amp;Preferences</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About &amp;Qt</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../resources/images.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>action_Quit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindowDesign</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
