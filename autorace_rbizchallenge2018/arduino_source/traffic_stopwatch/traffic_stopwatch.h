@@ -31,18 +31,23 @@ OLLO ollo;
 static uint16_t sensor_distance[3];// = {SENSOR_DISTANCE_INIT_VALUE, SENSOR_DISTANCE_INIT_VALUE, SENSOR_DISTANCE_INIT_VALUE};
 
 double stopwatch_start_time_;
-bool is_started[3];
-bool is_able_to_pass_;
 
 uint8_t led_turn_ = 1;
 
+double trainig_start_time_;
+double match_start_time_;
+
+double training_time;
+double match_time;
+double light_loop_time_;
+double random_delay;
+bool mission_trigger;
 /*******************************************************************************
 * Enum
 *******************************************************************************/
-static enum State { WAITING_FOR_ENTER, ENTERED, MUST_STOP, PASSED } vehicle_state_;
+static enum State { MISSION, FAIL, PASS } state_;
 static enum Color { LED_RED, LED_YELLOW, LED_GREEN, LED_ALL_LOW } led_color_;
-static enum Mode  { ACTIVE_MODE, TEST_MODE } mode_;
-
+static enum Mode  { READY_MODE, TRAINING_MODE, MATCH_MODE } mode_;
 /*******************************************************************************
 * Functions
 *******************************************************************************/
@@ -69,4 +74,3 @@ void pbSensorState();
 * Callback function for InitStateTrafficLight msg
 *******************************************************************************/
 void cbInitStateTrafficLight(const rbiz_autorace_msgs::DoIt& msgDoInitStateTrafficLight);
-void cbTestStateTrafficLight(const rbiz_autorace_msgs::DoIt& msgTestStateTrafficLight);
