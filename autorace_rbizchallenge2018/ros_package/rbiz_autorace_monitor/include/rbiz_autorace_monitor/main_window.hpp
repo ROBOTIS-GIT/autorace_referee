@@ -48,7 +48,6 @@ public Q_SLOTS:
 	** Auto-connections (connectSlotsByName())
 	*******************************************/
 
-        void fnReadyLapTime();
         //void setreset();
 
         void on_pushButton_clicked(bool check);
@@ -57,12 +56,22 @@ public Q_SLOTS:
     /******************************************
     ** Manual connections
     *******************************************/
-	// void fnUpdateLapTime();
+        void readyAllTime();
+        void startReadyTime();
+        void resetTrainingTime();
+        void setTrainingTime(int min, int sec, int m_sec);
+        void readyMissionTime();
+        void startMissionTime(int min, int sec, int m_sec);
+        void finishMission();
+        void timeOut();
     // void updateLoggingView(); // no idea why this can't connect automatically
 
 private:
 	Ui::MainWindowDesign ui;
 	QNode qnode;
+
+        ros::Time start_ready_time_;
+        ros::Time start_play_time_;
 };
 
 }  // namespace rbiz_autorace_monitor

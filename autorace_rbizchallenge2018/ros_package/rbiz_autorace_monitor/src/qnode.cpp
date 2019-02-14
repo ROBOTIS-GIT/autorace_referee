@@ -15,6 +15,7 @@
 #include <string>
 #include <std_msgs/String.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int8.h>
 #include <sstream>
 #include "../include/rbiz_autorace_monitor/qnode.hpp"
 
@@ -75,12 +76,13 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
 
 	pubTestStateTrafficLight = n.advertise<rbiz_autorace_msgs::DoIt>("test_state/traffic_light", 1);
 	pubTestStateLevelCrossing = n.advertise<rbiz_autorace_msgs::DoIt>("test_state/level_crossing", 1);
-    pub_level = n.advertise<std_msgs::Bool>("/level", 1);
-    pub_reset = n.advertise<std_msgs::Bool>("/reset", 1);
+        pub_level = n.advertise<std_msgs::Bool>("/level", 1);
+        pub_reset = n.advertise<std_msgs::Bool>("/reset", 1);
+        pub_state = n.advertise<std_msgs::Int8>("/state", 1);
 
 	// Subscriber
 	subSensorStateStopwatch = n.subscribe("sensor_state/stopwatch", 1, &QNode::cbReceiveSensorStateStopwatch, this);
-    subReadywatch = n.subscribe("readyrago", 1, &QNode::cbReadyLapWatch, this);
+
 
 
 	start();
@@ -88,7 +90,7 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
 }
 
 void QNode::run() {
-	ros::Rate loop_rate(10);
+        ros::Rate loop_rate(100);
 	// int count = 0;
 	while ( ros::ok() ) {
 
@@ -99,6 +101,8 @@ void QNode::run() {
 		// // pubInitStateTrafficLight.publish(msg);
 		//
 		// log(Info,std::string("I sent: ")+msg.data);
+
+                process();
 
 		ros::spinOnce();
 		loop_rate.sleep();
@@ -112,8 +116,8 @@ void QNode::run() {
 
 void QNode::cbReceiveSensorStateStopwatch(const rbiz_autorace_msgs::SensorStateStopwatch msgSensorStateStopwatch)
 {
-	lap_time = msgSensorStateStopwatch.lap_time;
-    mission_time = msgSensorStateStopwatch.elapsed_time;
+//	lap_time = msgSensorStateStopwatch.lap_time;
+//    mission_time = msgSensorStateStopwatch.elapsed_time;
 
     if (msgSensorStateStopwatch.vehicle_state == 0)
     {
@@ -129,6 +133,9 @@ void QNode::cbReceiveSensorStateStopwatch(const rbiz_autorace_msgs::SensorStateS
     else if (msgSensorStateStopwatch.vehicle_state == 2)
     {
         stopwatchStatus = START;
+
+        start_trainging_time_ = ros::Time::now();
+
         if (level_trigger == true)
         {
             std_msgs::Bool level_msg;
@@ -140,6 +147,7 @@ void QNode::cbReceiveSensorStateStopwatch(const rbiz_autorace_msgs::SensorStateS
     else if (msgSensorStateStopwatch.vehicle_state == 3)
     {
         stopwatchStatus = MISSION;
+        start_mission_time_ = ros::Time::now();
     }
 
     else if (msgSensorStateStopwatch.vehicle_state == 4)
@@ -147,12 +155,7 @@ void QNode::cbReceiveSensorStateStopwatch(const rbiz_autorace_msgs::SensorStateS
         stopwatchStatus = FINISH;
     }
 
-    if (mission_time > 300000)
-    {
-        stopwatchStatus = TIMEOUT;
-    }
-
-    Q_EMIT fnUpdateReadyLap();
+    // Q_EMIT fnUpdateReadyLap();
 
 	// std_msgs::String msg;
 	// std::stringstream ss;
@@ -163,22 +166,19 @@ void QNode::cbReceiveSensorStateStopwatch(const rbiz_autorace_msgs::SensorStateS
 	// log(Info,std::string("I sent: ")+msg.data);
 }
 
-void QNode::cbReadyLapWatch(const std_msgs::Bool::ConstPtr &msg)
-{
-    //update something
-    if (msg->data == true)   // send signal
-    {
-        Q_EMIT fnUpdateReadyLap();
-
-    }
-}
-
 void QNode::pbResetMsg()
 {
     std_msgs::Bool reset_msg;
     reset_msg.data = true;
     stopwatchStatus = STAY;
     pub_reset.publish(reset_msg);
+}
+
+void QNode::pbStateMsg(int state)
+{
+    std_msgs::Int8 state_msg;
+    state_msg.data = state;
+    pub_state.publish(state_msg);
 }
 
 void QNode::log( const LogLevel &level, const std::string &msg) {
@@ -220,6 +220,75 @@ void QNode::log( const LogLevel &level, const std::string &msg) {
 // {
 // 	Q_EMIT loggingUpdated();
 // }
+
+void QNode::process()
+{
+
+    switch(stopwatchStatus)
+    {
+
+
+
+        case STAY:
+        {
+            start_trainging_time_ = ros::Time::now();
+            Q_EMIT resetTrainingTime();
+            break;
+        }
+        case READY:
+        {
+            ros::Time current_time = ros::Time::now();
+
+            ros::Duration dur_1 = current_time - start_trainging_time_;
+            ros::Duration dur = ros::Duration(0.1 * 60) - dur_1;
+            int min = dur.sec / 60;
+            int sec = dur.sec % 60;
+            int m_sec = dur.nsec / 10e6;
+
+            Q_EMIT setTrainingTime(min, sec, m_sec);
+
+            if (dur <= ros::Duration(0))
+            {
+                stopwatchStatus = START;
+                pbStateMsg(1);
+            }
+
+            break;
+        }
+
+        case START:
+            Q_EMIT readyMissionTime();
+            break;
+
+        case MISSION:
+        {
+            ros::Time mission_time = ros::Time::now();
+            ros::Duration dur = mission_time - start_mission_time_;
+
+            int min = dur.sec / 60;
+            int sec = dur.sec % 60;
+            int m_sec = dur.nsec / 10e6;
+
+            Q_EMIT startMissionTime(min, sec, m_sec);
+            if (dur.sec >= 60 * 5)     // time out 5 min
+            {
+                stopwatchStatus = TIMEOUT;
+            }
+            break;
+        }
+        case FINISH:
+            Q_EMIT finishMission();
+            break;
+
+        case TIMEOUT:
+        {
+            Q_EMIT timeOut();
+            break;
+        }
+        default:
+            break;
+    }
+}
 
 
 }  // namespace rbiz_autorace_monitor

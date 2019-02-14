@@ -52,27 +52,13 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
 	// setWindowIcon(QIcon(":/images/icon.png"));
 	// ui.tab_manager->setCurrentIndex(0); // ensure the first tab is showing - qt-designer should have this already hardwired, but often loses it (settings?).
     QObject::connect(&qnode, SIGNAL(rosShutdown()), this, SLOT(close()));
-    QObject::connect(&qnode, SIGNAL(fnUpdateReadyLap()), this, SLOT(fnReadyLapTime()));
-
-
-		// QObject::connect(&qnode, SIGNAL(loggingUpdated()), this, SLOT(fnUpdateLapTime()));
-
-
-	/*********************
-	** Logging
-	**********************/
-	// ui.view_logging->setModel(qnode.loggingModel());
-    // QObject::connect(&qnode, SIGNAL(loggingUpdated()), this, SLOT(updateLoggingView()));
-
-		// while(1)
-		// {
-		// 	;
-		// }
-
-  // if ( ui.checkbox_remember_settings->isChecked() ) {
-  	// on_button_connect_clicked(true);
-  // }
-	// on_pButtonMission1_clicked(true);
+    QObject::connect(&qnode, SIGNAL(resetTrainingTime()), this, SLOT(readyAllTime()));
+    QObject::connect(&qnode, SIGNAL(startTrainingTime()), this, SLOT(startReadyTime()));
+    QObject::connect(&qnode, SIGNAL(setTrainingTime(int, int, int)), this, SLOT(setTrainingTime(int, int, int)));
+    QObject::connect(&qnode, SIGNAL(readyMissionTime()), this, SLOT(readyMissionTime()));
+    QObject::connect(&qnode, SIGNAL(startMissionTime(int, int, int)), this, SLOT(startMissionTime(int, int, int)));
+    QObject::connect(&qnode, SIGNAL(finishMission()), this, SLOT(finishMission()));
+    QObject::connect(&qnode, SIGNAL(timeOut()), this, SLOT(timeOut()));
 }
 
 MainWindow::~MainWindow() {}
@@ -81,7 +67,7 @@ MainWindow::~MainWindow() {}
 ** Implementation [Slots]
 *****************************************************************************/
 
-// void MainWindow::showNoMasterMessage() {
+// void MainWindow::showNoMasterMessage() {finishMission
 // 	QMessageBox msgBox;
 // 	msgBox.setText("Couldn't find the ros master.");
 // 	msgBox.exec();
@@ -98,159 +84,6 @@ void MainWindow::on_pushButton_clicked(bool check)
 {
     qnode.pbResetMsg();
 }
-
-void MainWindow::fnReadyLapTime()
-{
-    // handle ui of ready lap time
-    // ..
-    if (qnode.stopwatchStatus == 0)
-    {
-        ui.ready_min_1->display(1);
-        ui.ready_min_2->display(0);
-        ui.ready_sec_1->display(0);
-        ui.ready_sec_2->display(0);
-        ui.ready_ms_1->display(0);
-        ui.ready_ms_2->display(0);
-
-        ui.mission_min_1->display(0);
-        ui.mission_min_2->display(0);
-        ui.mission_sec_1->display(0);
-        ui.mission_sec_2->display(0);
-        ui.mission_ms_1->display(0);
-        ui.mission_ms_2->display(0);
-
-
-        ui.ready_min_1->setPalette(Qt::lightGray);
-        ui.ready_min_2->setPalette(Qt::lightGray);
-        ui.ready_sec_1->setPalette(Qt::lightGray);
-        ui.ready_sec_2->setPalette(Qt::lightGray);
-        ui.ready_ms_1->setPalette(Qt::lightGray);
-        ui.ready_ms_2->setPalette(Qt::lightGray);
-
-        ui.mission_min_1->setPalette(Qt::white);
-        ui.mission_min_2->setPalette(Qt::white);
-        ui.mission_sec_1->setPalette(Qt::white);
-        ui.mission_sec_2->setPalette(Qt::white);
-        ui.mission_ms_1->setPalette(Qt::white);
-        ui.mission_ms_2->setPalette(Qt::white);
-
-
-    }
-    else if(qnode.stopwatchStatus == 1)
-    {
-        if ((int)(10 - ((int)(qnode.lap_time / 60000.0) % 10)) > 0)
-        {
-            ui.ready_min_1->display(0);
-            ui.ready_min_2->display(((int)(9-((int)(qnode.lap_time / 60000.0) % 10))));
-            ui.ready_sec_1->display(((int)(5-((int)(qnode.lap_time / 10000.0) % 6))));
-            ui.ready_sec_2->display(((int)(9-((int)(qnode.lap_time / 1000.0) % 10))));
-            ui.ready_ms_1->display(((int)(9-((int)qnode.lap_time % 1000 / 100.0))));
-        }
-
-        else
-        {
-            ui.ready_min_1->display(1);
-            ui.ready_min_2->display(((int)((int)(60000.0 - qnode.lap_time / 60000.0) % 10)));
-            ui.ready_sec_1->display(0);
-            ui.ready_sec_2->display(0);
-            ui.ready_ms_1->display(0);
-        }
-    }
-
-    else if(qnode.stopwatchStatus == 2)
-    {
-        ui.mission_min_1->setPalette(Qt::green);
-        ui.mission_min_2->setPalette(Qt::green);
-        ui.mission_sec_1->setPalette(Qt::green);
-        ui.mission_sec_2->setPalette(Qt::green);
-        ui.mission_ms_1->setPalette(Qt::green);
-        ui.mission_ms_2->setPalette(Qt::green);
-    }
-
-    else if(qnode.stopwatchStatus == 3)
-    {
-
-        ui.mission_min_1->display(0);
-        ui.mission_min_2->display((int)(((int)(qnode.mission_time / 60000.0) % 10)));
-        ui.mission_sec_1->display((int)(((int)(qnode.mission_time / 10000.0) % 6)));
-        ui.mission_sec_2->display((int)(((int)(qnode.mission_time / 1000.0) % 10)));
-        ui.mission_ms_1->display((int)(((int)qnode.mission_time % 1000 / 100.0)));
-
-
-    }
-
-    else if(qnode.stopwatchStatus == 4)
-    {
-        ui.mission_min_1->setPalette(Qt::blue);
-        ui.mission_min_2->setPalette(Qt::blue);
-        ui.mission_sec_1->setPalette(Qt::blue);
-        ui.mission_sec_2->setPalette(Qt::blue);
-        ui.mission_ms_1->setPalette(Qt::blue);
-        ui.mission_ms_2->setPalette(Qt::blue);
-    }
-
-    else if(qnode.stopwatchStatus == 5)
-    {
-        ui.mission_min_1->setPalette(Qt::red);
-        ui.mission_min_2->setPalette(Qt::red);
-        ui.mission_sec_1->setPalette(Qt::red);
-        ui.mission_sec_2->setPalette(Qt::red);
-        ui.mission_ms_1->setPalette(Qt::red);
-        ui.mission_ms_2->setPalette(Qt::red);
-    }
-
-
-    ui.ready_min_1->setAutoFillBackground(true);
-    ui.ready_min_2->setAutoFillBackground(true);
-    ui.ready_sec_1->setAutoFillBackground(true);
-    ui.ready_sec_2->setAutoFillBackground(true);
-    ui.ready_ms_1->setAutoFillBackground(true);
-    ui.ready_ms_2->setAutoFillBackground(true);
-
-    ui.mission_min_1->setAutoFillBackground(true);
-    ui.mission_min_2->setAutoFillBackground(true);
-    ui.mission_sec_1->setAutoFillBackground(true);
-    ui.mission_sec_2->setAutoFillBackground(true);
-    ui.mission_ms_1->setAutoFillBackground(true);
-    ui.mission_ms_2->setAutoFillBackground(true);
-
-
-}
-
-
-
-// void MainWindow::on_button_connect_clicked(bool check ) {
-// 	if ( ui.checkbox_use_environment->isChecked() ) {
-// 		if ( !qnode.init() ) {
-// 			showNoMasterMessage();
-// 		} else {
-// 			ui.button_connect->setEnabled(false);
-// 		}
-// 	} else {
-// 		if ( ! qnode.init(ui.line_edit_master->text().toStdString(),
-// 				   ui.line_edit_host->text().toStdString()) ) {
-// 			showNoMasterMessage();
-// 		} else {
-// 			ui.button_connect->setEnabled(false);
-// 			ui.line_edit_master->setReadOnly(true);
-// 			ui.line_edit_host->setReadOnly(true);
-// 			ui.line_edit_topic->setReadOnly(true);
-// 		}
-// 	}
-// }
-
-
-// void MainWindow::on_checkbox_use_environment_stateChanged(int state) {
-// 	bool enabled;
-// 	if ( state == 0 ) {
-// 		enabled = true;
-// 	} else {
-// 		enabled = false;
-// 	}
-// 	ui.line_edit_master->setEnabled(enabled);
-// 	ui.line_edit_host->setEnabled(enabled);
-// 	//ui.line_edit_topic->setEnabled(enabled);
-// }
 
 /*****************************************************************************
 ** Implemenation [Slots][manually connected]
@@ -314,6 +147,114 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
 	WriteSettings();
 	QMainWindow::closeEvent(event);
+}
+
+void MainWindow::readyAllTime()
+{
+    ui.ready_min_1->display(1);
+    ui.ready_min_2->display(0);
+    ui.ready_sec_1->display(0);
+    ui.ready_sec_2->display(0);
+    ui.ready_ms_1->display(0);
+    ui.ready_ms_2->display(0);
+
+    ui.mission_min_1->display(0);
+    ui.mission_min_2->display(0);
+    ui.mission_sec_1->display(0);
+    ui.mission_sec_2->display(0);
+    ui.mission_ms_1->display(0);
+    ui.mission_ms_2->display(0);
+
+    ui.ready_min_1->setPalette(Qt::lightGray);
+    ui.ready_min_2->setPalette(Qt::lightGray);
+    ui.ready_sec_1->setPalette(Qt::lightGray);
+    ui.ready_sec_2->setPalette(Qt::lightGray);
+    ui.ready_ms_1->setPalette(Qt::lightGray);
+    ui.ready_ms_2->setPalette(Qt::lightGray);
+
+    ui.mission_min_1->setPalette(Qt::white);
+    ui.mission_min_2->setPalette(Qt::white);
+    ui.mission_sec_1->setPalette(Qt::white);
+    ui.mission_sec_2->setPalette(Qt::white);
+    ui.mission_ms_1->setPalette(Qt::white);
+    ui.mission_ms_2->setPalette(Qt::white);
+
+    ui.ready_min_1->setAutoFillBackground(true);
+    ui.ready_min_2->setAutoFillBackground(true);
+    ui.ready_sec_1->setAutoFillBackground(true);
+    ui.ready_sec_2->setAutoFillBackground(true);
+    ui.ready_ms_1->setAutoFillBackground(true);
+    ui.ready_ms_2->setAutoFillBackground(true);
+
+    ui.mission_min_1->setAutoFillBackground(true);
+    ui.mission_min_2->setAutoFillBackground(true);
+    ui.mission_sec_1->setAutoFillBackground(true);
+    ui.mission_sec_2->setAutoFillBackground(true);
+    ui.mission_ms_1->setAutoFillBackground(true);
+    ui.mission_ms_2->setAutoFillBackground(true);
+
+}
+
+void MainWindow::startReadyTime()
+{
+    // set start time
+    start_ready_time_ = ros::Time::now();
+}
+
+void MainWindow::setTrainingTime(int min, int sec, int m_sec)
+{
+    // display training time
+    ui.ready_min_1->display(min/10);
+    ui.ready_min_2->display(min%10);
+    ui.ready_sec_1->display(sec/10);
+    ui.ready_sec_2->display(sec%10);
+    ui.ready_ms_1->display(m_sec/10);
+    ui.ready_ms_2->display(m_sec%10);
+}
+
+void MainWindow::resetTrainingTime()
+{
+    start_ready_time_ = ros::Time::now();
+}
+
+void MainWindow::readyMissionTime()
+{
+    ui.mission_min_1->setPalette(Qt::green);
+    ui.mission_min_2->setPalette(Qt::green);
+    ui.mission_sec_1->setPalette(Qt::green);
+    ui.mission_sec_2->setPalette(Qt::green);
+    ui.mission_ms_1->setPalette(Qt::green);
+    ui.mission_ms_2->setPalette(Qt::green);
+}
+
+void MainWindow::startMissionTime(int min, int sec, int m_sec)
+{
+    ui.mission_min_1->display(min/10);
+    ui.mission_min_2->display(min%10);
+    ui.mission_sec_1->display(sec/10);
+    ui.mission_sec_2->display(sec%10);
+    ui.mission_ms_1->display(m_sec/10);
+    ui.mission_ms_2->display(m_sec%10);
+}
+
+void MainWindow::finishMission()
+{
+    ui.mission_min_1->setPalette(Qt::blue);
+    ui.mission_min_2->setPalette(Qt::blue);
+    ui.mission_sec_1->setPalette(Qt::blue);
+    ui.mission_sec_2->setPalette(Qt::blue);
+    ui.mission_ms_1->setPalette(Qt::blue);
+    ui.mission_ms_2->setPalette(Qt::blue);
+}
+
+void MainWindow::timeOut()
+{
+    ui.mission_min_1->setPalette(Qt::red);
+    ui.mission_min_2->setPalette(Qt::red);
+    ui.mission_sec_1->setPalette(Qt::red);
+    ui.mission_sec_2->setPalette(Qt::red);
+    ui.mission_ms_1->setPalette(Qt::red);
+    ui.mission_ms_2->setPalette(Qt::red);
 }
 
 }  // namespace rbiz_autorace_monitor

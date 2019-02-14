@@ -19,6 +19,7 @@
 #ifndef Q_MOC_RUN
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int8.h>
 #include <rbiz_autorace_msgs/SensorStateTrafficLight.h>
 #include <rbiz_autorace_msgs/SensorStateLevelCrossing.h>
 #include <rbiz_autorace_msgs/SensorStateStopwatch.h>
@@ -83,15 +84,21 @@ public:
   void cbReceiveSensorStateStopwatch(const rbiz_autorace_msgs::SensorStateStopwatch msgSensorStateStopwatch);
   void cbReadyLapWatch(const std_msgs::Bool::ConstPtr &msg);
   void pbResetMsg();
-
+  void pbStateMsg(int state);
 
 	// QStringListModel* loggingModel() { return &logging_model; }
 	void log( const LogLevel &level, const std::string &msg);
 
 Q_SIGNALS:
-  void fnUpdateLapTime();
-  void fnUpdateReadyLap();
-
+  void resetTrainingTime();
+  void startTrainingTime();
+  void stopTrainingTime();
+  void readyAllTime();
+  void setTrainingTime(int min, int sec, int m_sec);
+  void readyMissionTime();
+  void startMissionTime(int min, int sec, int m_sec);
+  void finishMission();
+  void timeOut();
 // void fnPassLapTime();
 	// void loggingUpdated();
     void rosShutdown();
@@ -99,6 +106,8 @@ Q_SIGNALS:
 private:
 	int init_argc;
 	char** init_argv;
+
+        void process();
 
   // Publisher
   ros::Publisher pubInitStateTrafficLight;
@@ -109,6 +118,7 @@ private:
   ros::Publisher pubTestStateLevelCrossing;
   ros::Publisher pub_reset;
   ros::Publisher pub_level;
+  ros::Publisher pub_state;
   // Subscriber
   ros::Subscriber subSensorStateTrafficLight;
 
@@ -126,6 +136,10 @@ private:
 
   rbiz_autorace_msgs::DoIt msgDoTestStateTrafficLight;
   rbiz_autorace_msgs::DoIt msgDoTestStateLevelCrossing;
+
+
+  ros::Time start_trainging_time_;
+  ros::Time start_mission_time_;
 
 
   // QStringListModel logging_model;
