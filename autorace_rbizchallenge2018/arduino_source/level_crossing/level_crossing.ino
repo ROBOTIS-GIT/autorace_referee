@@ -26,15 +26,11 @@ author : Leon Ryuwoon Jung
 /*******************************************************************************
 * Subscriber
 *******************************************************************************/
-ros::Subscriber<rbiz_autorace_msgs::DoIt> subInitStateLevelCrossing("init_state/level_crossing",cbInitStateLevelCrossing);
-ros::Subscriber<rbiz_autorace_msgs::DoIt> subTestStateLevelCrossing("test_state/level_crossing",cbTestStateLevelCrossing);
-
+ros::Subscriber<rbiz_autorace_msgs::SensorStateStopwatch> msgSensorStateStopwatch("sensor_state/stopwatch", callBack);
 /*******************************************************************************
 * Publisher
 *******************************************************************************/
 // DMS, battery, etc.
-rbiz_autorace_msgs::SensorStateLevelCrossing msgSensorStateLevelCrossing;
-ros::Publisher pubSensorStateLevelCrossing("sensor_state/level_crossing", &msgSensorStateLevelCrossing);
 
 /*******************************************************************************
 * Setup function
@@ -44,9 +40,8 @@ void setup()
   // Initialize ROS node handle, advertise and subscribe the topics
   nh.initNode();
   nh.getHardware()->setBaud(115200);
-  nh.subscribe(subInitStateLevelCrossing);
-  nh.subscribe(subTestStateLevelCrossing);
-  nh.advertise(pubSensorStateLevelCrossing);
+  nh.subscribe(msgSensorStateStopwatch);
+  nh.subscribe(reset_sub);
 
   nh.loginfo("Connected to OpenCR board!");
 
@@ -80,31 +75,13 @@ void loop()
 
   fnControlLevelPose();
 
-  pbSensorState();
-
   nh.spinOnce();
 }
 
 /*******************************************************************************
 * Publish msgs (Sensor data: Power, etc.)
 *******************************************************************************/
-void pbSensorState()
-{
-  msgSensorStateLevelCrossing.stamp = nh.now();
-  msgSensorStateLevelCrossing.elapsed_time = fnGetTimeSinceStart();
-  msgSensorStateLevelCrossing.sensor_distance[0] = sensor_distance[0];
-  msgSensorStateLevelCrossing.sensor_distance[1] = sensor_distance[1];
-  msgSensorStateLevelCrossing.sensor_distance[2] = sensor_distance[2];
-  msgSensorStateLevelCrossing.is_started[0] = is_started[0];
-  msgSensorStateLevelCrossing.is_started[1] = is_started[1];
-  msgSensorStateLevelCrossing.is_started[2] = is_started[2];
-  msgSensorStateLevelCrossing.is_able_to_pass = is_able_to_pass_;
-  msgSensorStateLevelCrossing.vehicle_state = vehicle_state_;
-  msgSensorStateLevelCrossing.level_status = level_status_;
-  msgSensorStateLevelCrossing.battery = fncheckVoltage();
 
-  pubSensorStateLevelCrossing.publish(&msgSensorStateLevelCrossing);
-}
 
 /*******************************************************************************
 * Callback function
@@ -141,7 +118,8 @@ void fnGetButtonPressed()
 void fnInitStateLevelCrossing()
 {
   fnSetStopWatch();
-
+  
+  level_turn_ = 0;
   sensor_distance[0] = 0;
   sensor_distance[1] = 0;
   sensor_distance[2] = 0;
@@ -218,31 +196,12 @@ void fnLevelControl()
 
         level_status_ = LEVEL_CLOSED;
 
-
-        // }
-        // else if (fnGetTimeSinceStart() > 3000.0 && fnGetTimeSinceStart() <= 8000.0)
-        // {
-        //   level_status_ = LEVEL_CLOSED;
-        //   // is_able_to_pass_ = false;
-        //   // is_started[1] = false;
-        // }
-        // else if (fnGetTimeSinceStart() > 8000.0)
-        // {
-        //   level_status_ = LED_GREEN);
-        //  // is_able_to_pass_ = true;
-        //   // is_started[1] = false;
-        // }
       }
     }
     else if (vehicle_state_ == MUST_STOP)
     {
-      // if (is_able_to_pass_ == false)
-      // {
-        // level_status_ = LEVEL_CLOSED;
-
         if (is_started[1] == false)
         {
-          //start stopwatch
           fnSetStopWatch();
           is_started[1] = true;
         }
@@ -251,30 +210,14 @@ void fnLevelControl()
           if (fnGetTimeSinceStart() > 5000.0)
           {
             level_status_ = LEVEL_OPENED;
-
-
             is_able_to_pass_ = true;
-            // is_started[1] = false;
           }
           else
           {
             level_status_ = LEVEL_CLOSED;
-
-
             is_able_to_pass_ = false;
-            // is_started[1] = false;
           }
         }
-      // }
-      // else
-      // {
-      //   // if (fnGetTimeSinceStart() > 50000.0)
-      //   // {
-      //     level_status_ = LEVEL_OPENED;
-      //     // is_able_to_pass_ = true;
-      //     // is_started[1] = false;
-      //   // }
-      // }
     }
     else if (vehicle_state_ == PASSED)
     {
@@ -288,47 +231,21 @@ void fnLevelControl()
         if (is_able_to_pass_ == false)
         {
           level_status_ = LEVEL_CLOSED;
-
-
-          // level_status_ = ALL);
-          // fnSetStopWatch);
-          // is_started[2] = true;
         }
         else
         {
-          level_status_ = LEVEL_OPENED;
-
-
-          // if (fnGetTimeSinceStart() > 50000.0)
-          // {
-            // level_status_ = LED_GREEN);
-            //is_able_to_pass_ = true;
-            // is_started[1] = false;
-          // }
+          if (level_turn_ == 1)          level_status_ = LEVEL_SUCCESS;
+          else                           level_status_ = LEVEL_OPENED;
+          
+          if (millis()-pre_time >= 1000) 
+          {
+            level_turn_ = 1 - level_turn_;
+            pre_time = millis();
+          }
         }
       }
-
-      // is_able_to_pass_ = false;
     }
   }
-  else if (mode_ == TEST_MODE)
-  {
-    if (vehicle_state_ == ENTERED)
-    {
-      level_status_ = LEVEL_CLOSED;
-    }
-    else if (vehicle_state_ == MUST_STOP)
-    {
-      level_status_ = LEVEL_MIDDLE;
-    }
-    else if (vehicle_state_ == PASSED)
-    {
-      level_status_ = LEVEL_OPENED;
-
-      fnInitStateLevelCrossing();
-    }
-  }
-
   // Serial.print(fnGetTimeSinceStart());
   // Serial.println(" ");
 }
@@ -347,6 +264,11 @@ void fnControlLevelPose()
   {
     motorDriver.controlPosition(DXL_ID, DXL_POSITION_VALUE_MIDDLE);
   }
+  else if (level_status_ == LEVEL_SUCCESS)
+  {
+    motorDriver.controlPosition(DXL_ID, DXL_POSITION_VALUE_SUCCESS);
+  }
+  
 }
 
 double fnGetCurrentTime()
@@ -364,20 +286,19 @@ double fnGetTimeSinceStart()
 
   return elapsed_time;
 }
-
 void fnSetStopWatch()
 {
   stopwatch_start_time_ = fnGetCurrentTime();
 }
-
-/*******************************************************************************
-* Check voltage
-*******************************************************************************/
-float fncheckVoltage()
+void callBack(const rbiz_autorace_msgs::SensorStateStopwatch& state_msg)
 {
-  float vol_value;
+  int data;
+  
+  data = state_msg.vehicle_state;
+  if (data == 2) fnInitStateLevelCrossing();
+}
 
-  vol_value = getPowerInVoltage();
-
-  return vol_value;
+void resetCallback(const std_msgs::Bool& reset_msg)
+{
+  fnInitStateLevelCrossing();
 }

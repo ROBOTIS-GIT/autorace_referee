@@ -25,27 +25,21 @@
  */
 
 #include "traffic_stopwatch.h"
-
-/*******************************************************************************
-* Subscriber
-*******************************************************************************/
-ros::Subscriber<rbiz_autorace_msgs::DoIt> subInitStateTrafficLight("init_state/traffic_light",cbInitStateTrafficLight);
-
 /*******************************************************************************
 * Publisher
 *******************************************************************************/
 // DMS, battery, etc.
-rbiz_autorace_msgs::SensorStateTrafficLight msgSensorStateTrafficLight;
-ros::Publisher pubSensorStateTrafficLight("sensor_state/traffic_light", &msgSensorStateTrafficLight);
-
+rbiz_autorace_msgs::SensorStateStopwatch msgSensorStateStopwatch;
+ros::Publisher pubSensorStateStopwatch("sensor_state/stopwatch", &msgSensorStateStopwatch);
 
 /*******************************************************************************
-* Set push button
+* Set param
 *******************************************************************************/
 const int BLUE_push = BDPIN_GPIO_6;  //training mode
 const int RED_push = BDPIN_GPIO_4;   //match mode
 const int RED_YELLOW_delay = 3000;   // RED -> YELLOW delay
 const int GREEN_RED_delay = 5000;    // GREEN -> RED delay 
+
 /*******************************************************************************
 * Setup function
 *******************************************************************************/
@@ -54,8 +48,9 @@ void setup()
   // Initialize ROS node handle, advertise and subscribe the topics
   nh.initNode();
   nh.getHardware()->setBaud(115200);
-  nh.subscribe(subInitStateTrafficLight);
-  nh.advertise(pubSensorStateTrafficLight);
+  nh.subscribe(reset_sub);
+  nh.subscribe(state_sub);
+  nh.advertise(pubSensorStateStopwatch);
 
   nh.loginfo("Connected to OpenCR board!");
 
@@ -72,9 +67,13 @@ void setup()
 
   pinMode(BLUE_push, INPUT_PULLUP);
   pinMode(RED_push, INPUT_PULLUP);
+
+  // Setting for Dynamixel motors
+  motorDriver.init();
   
   // Init Paramters
   fnInitStateTrafficLight();
+  
 }
 
 /*******************************************************************************
@@ -93,9 +92,7 @@ void loop()
   fnLEDControl();
 
   fnControlLED();
-
-  pbSensorState();
-
+  
   nh.spinOnce();
 }
 
@@ -104,32 +101,13 @@ void loop()
 *******************************************************************************/
 void pbSensorState()
 {
-  msgSensorStateTrafficLight.stamp = nh.now();
-  msgSensorStateTrafficLight.elapsed_time = fnGetTimeSinceStart();
-  msgSensorStateTrafficLight.sensor_distance[0] = sensor_distance[0];
-  msgSensorStateTrafficLight.sensor_distance[1] = sensor_distance[1];
-  msgSensorStateTrafficLight.sensor_distance[2] = sensor_distance[2];
-//  msgSensorStateTrafficLight.is_started[0] = is_started[0];
-//  msgSensorStateTrafficLight.is_started[1] = is_started[1];
-//  msgSensorStateTrafficLight.is_started[2] = is_started[2];
-//  msgSensorStateTrafficLight.is_able_to_pass = is_able_to_pass_;
-//  msgSensorStateTrafficLight.vehicle_state = vehicle_state_;
-  msgSensorStateTrafficLight.led_color = led_color_;
-  msgSensorStateTrafficLight.battery = fncheckVoltage();
+  msgSensorStateStopwatch.stamp = nh.now();
+  msgSensorStateStopwatch.sensor_distance[0] = sensor_distance[0];
+  msgSensorStateStopwatch.sensor_distance[1] = sensor_distance[1];
+  msgSensorStateStopwatch.sensor_distance[2] = sensor_distance[2];
+  msgSensorStateStopwatch.vehicle_state = mission_state_;
 
-  pubSensorStateTrafficLight.publish(&msgSensorStateTrafficLight);
-}
-
-/*******************************************************************************
-* Callback function
-*******************************************************************************/
-
-void cbInitStateTrafficLight(const rbiz_autorace_msgs::DoIt& msgInitStateTrafficLight)
-{
-  if (msgInitStateTrafficLight.doIt == true)
-  {
-    fnInitStateTrafficLight();
-  }
+  pubSensorStateStopwatch.publish(&msgSensorStateStopwatch);
 }
 
 /*******************************************************************************
@@ -144,16 +122,26 @@ void modeCheck()
     mode_ = TRAINING_MODE;
     trainig_start_time_ = fnGetCurrentTime();
     training_time = trainig_start_time_;
+    mission_state_ = TRAINING_START;
+    fnInitlevel();
+    pbSensorState();
   }
-  else if ((mode_ == TRAINING_MODE) && (digitalRead(RED_push) == LOW))  
+  else if (((mode_ == TRAINING_MODE) && (digitalRead(RED_push) == LOW)) || stopWatchState_ == TRANINIG_TIMEOUT)  
   {
     mode_ = MATCH_MODE;
+    stopWatchState_ = SETUP;
     match_start_time_ = fnGetCurrentTime();
     match_time = match_start_time_;
     fnGetRandomDelay();    
+    mission_state_ = TRAINING_FINISH;
+    fnInitlevel();
+    pbSensorState();
   }
 
-//  Serial.println(mode_);
+  else if(stopWatchState_ == MATCH_TIMEOUT)
+  {
+    mode_ = FINISH_MODE;
+  }
 }
 
 
@@ -161,6 +149,8 @@ void fnGetButtonPressed()
 {
   if (ollo.read(4, TOUCH_SENSOR))
   {
+    fnInitlevel();
+    
     if (mode_ == READY_MODE)
     {
       if (led_color_ == LED_RED)          led_color_ = LED_YELLOW;
@@ -173,9 +163,7 @@ void fnGetButtonPressed()
       training_time = fnGetCurrentTime();
       fnGetRandomDelay();
     }
-
     else fnInitStateTrafficLight();
-    
   }
 }
 
@@ -183,26 +171,34 @@ void fnInitStateTrafficLight()
 {
   led_color_ = LED_RED;
   fnGetRandomDelay();
-  mission_trigger = false;
-  fnSetStopWatch();
  
+  fnSetStopWatch();
+  fnInitlevel();
   sensor_distance[0] = 0;
   sensor_distance[1] = 0;
   sensor_distance[2] = 0;
 
   mode_ = READY_MODE;
   state_ = MISSION;
-}
+  mission_state_ = READY;
+  stopWatchState_ = SETUP;
+  mission_start = false;
+  mission_trigger = false;
+  stopwatch_trigger = false;
+  trainig_start_time_ = 0.0;
+  match_start_time_ = 0.0;
+  training_time = 0.0;
+  match_time = 0.0;
+  light_loop_time_ = 0.0;
+  fail_delay = 0.0;
 
-void fnTestStateTrafficLight()
-{
-  fnInitStateTrafficLight();
+  pbSensorState();
 }
 
 void fnReceiveSensorDistance()
 {
   sensor_distance[0] = ollo.read(1);     // start line
-  sensor_distance[1] = ollo.read(2);
+  sensor_distance[1] = ollo.read(2);     // Sign 
 
 //   Serial.print("DMS Sensor 1 ADC Value = ");
 //   Serial.println(sensor_distance[0]); //read ADC value from OLLO port 1
@@ -217,13 +213,44 @@ void fnCheckVehicleStatus()
     if (sensor_distance[0] > DISTANCE_THRESHOLD_PASS && mission_trigger == false)
     {
       if (led_color_ == LED_GREEN)    state_ = PASS;
-      else                            state_ = FAIL;
-
+      
+      else         
+      {
+        state_ = FAIL;
+        fail_delay = (fnGetCurrentTime() - match_start_time_) - random_delay;
+        
+      }
       mission_trigger = true;
+
+      if (mission_start == false)
+      {
+        mission_state_ = MATCH_START;          
+        pbSensorState();
+        mission_start = true;
+      }
+    }
+  
+    if (sensor_distance[0] > DISTANCE_THRESHOLD_PASS && stopwatch_trigger == true)
+    {
+      mission_state_ = MATCH_FINISH;
+      pbSensorState();
+      stopwatch_trigger = false;
+    }
+
+    if (sensor_distance[1] > DISTANCE_THRESHOLD_PASS)
+    {
+      stopwatch_trigger = true;
     }
   }
-  // Serial.print("State : ");
-  // Serial.println(vehicle_state_);
+  
+  if (sensor_distance[1] > DISTANCE_THRESHOLD_PASS && level_trigger == false)
+  {
+    if (random(2) == 0)      motorDriver.controlPosition(DXL_ID_1, DXL_1_UP);
+
+    else                     motorDriver.controlPosition(DXL_ID_2, DXL_2_UP);
+
+    level_trigger = true;
+  }
 }
 
 void fnLEDControl()
@@ -249,7 +276,17 @@ void fnLEDControl()
     
       else if (light_loop_time_ > RED_YELLOW_delay && light_loop_time_ <= random_delay)                led_color_  = LED_YELLOW;
 
-      else if (light_loop_time_ > random_delay && light_loop_time_ <= random_delay + GREEN_RED_delay)  led_color_  = LED_GREEN;
+      else if (light_loop_time_ > random_delay && light_loop_time_ <= random_delay + GREEN_RED_delay)
+      {
+        led_color_  = LED_GREEN;
+        
+        if (mission_start == false) 
+        {
+          mission_state_ = MATCH_START;          
+          pbSensorState();
+          mission_start = true;
+        }
+      }
 
       else 
       {
@@ -268,10 +305,12 @@ void fnLEDControl()
       }
       
       else                        led_color_ = LED_ALL_LOW;
-      
-      led_turn_ = 1 - led_turn_;
 
-      delay(200);
+      if (millis()-pre_time >= 200) 
+      {
+        led_turn_ = 1 - led_turn_;
+        pre_time = millis();
+      }
     }
   }
 }
@@ -309,17 +348,6 @@ double fnGetCurrentTime()
 	return (double)millis();
 }
 
-double fnGetTimeSinceStart()
-{
-  double elapsed_time;
-
-  elapsed_time = fnGetCurrentTime() - stopwatch_start_time_;
-  if (elapsed_time < 0.0)
-    stopwatch_start_time_ = fnGetCurrentTime();
-
-  return elapsed_time;
-}
-
 void fnSetStopWatch()
 {
   stopwatch_start_time_ = fnGetCurrentTime();
@@ -329,14 +357,37 @@ void fnGetRandomDelay()
 {
   random_delay = random(3,11) * 1000 + RED_YELLOW_delay; // 3 ~ 10 sec + 3 sec
 }
+
 /*******************************************************************************
-* Check voltage
+* Function level
 *******************************************************************************/
-float fncheckVoltage()
+void fnInitlevel()
+{  
+  level_trigger = false;
+  motorDriver.controlPosition(DXL_ID_1, DXL_1_DOWN);
+  motorDriver.controlPosition(DXL_ID_2, DXL_2_DOWN);
+}
+
+void resetCallback(const std_msgs::Bool& reset_msg)
 {
-  float vol_value;
+  fnInitStateTrafficLight();
+}
 
-  vol_value = getPowerInVoltage();
-
-  return vol_value;
+void stateCallback(const std_msgs::Int8& state_msg)
+{
+  switch(state_msg.data)
+  {
+    case 1:
+    {
+     stopWatchState_ = TRANINIG_TIMEOUT;
+     break;
+    }
+    case 2:
+    {
+     stopWatchState_ = MATCH_TIMEOUT;
+     break;      
+    }
+    default:
+      break;
+  }   
 }
