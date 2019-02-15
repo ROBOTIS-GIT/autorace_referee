@@ -76,14 +76,12 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
 
 	pubTestStateTrafficLight = n.advertise<rbiz_autorace_msgs::DoIt>("test_state/traffic_light", 1);
 	pubTestStateLevelCrossing = n.advertise<rbiz_autorace_msgs::DoIt>("test_state/level_crossing", 1);
-        pub_level = n.advertise<std_msgs::Bool>("/level", 1);
-        pub_reset = n.advertise<std_msgs::Bool>("/reset", 1);
-        pub_state = n.advertise<std_msgs::Int8>("/state", 1);
+    pub_level = n.advertise<std_msgs::Bool>("/level", 1);
+    pub_reset = n.advertise<std_msgs::Bool>("/reset", 1);
+    pub_state = n.advertise<std_msgs::Int8>("/state", 1);
 
 	// Subscriber
 	subSensorStateStopwatch = n.subscribe("sensor_state/stopwatch", 1, &QNode::cbReceiveSensorStateStopwatch, this);
-
-
 
 	start();
 	return true;
@@ -240,7 +238,7 @@ void QNode::process()
             ros::Time current_time = ros::Time::now();
 
             ros::Duration dur_1 = current_time - start_trainging_time_;
-            ros::Duration dur = ros::Duration(0.1 * 60) - dur_1;
+            ros::Duration dur = ros::Duration(10 * 60) - dur_1;
             int min = dur.sec / 60;
             int sec = dur.sec % 60;
             int m_sec = dur.nsec / 10e6;

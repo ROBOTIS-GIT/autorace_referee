@@ -52,7 +52,7 @@ file(GLOB_RECURSE QT_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINK
 ##############################################################################
 # Binaries
 ##############################################################################
-
 add_executable(rbiz_autorace_monitor ${QT_SOURCES} ${QT_RESOURCES_CPP} ${QT_FORMS_HPP} ${QT_MOC_HPP})
+add_dependencies(rbiz_autorace_monitor ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rbiz_autorace_monitor ${QT_LIBRARIES} ${catkin_LIBRARIES})
 install(TARGETS rbiz_autorace_monitor RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

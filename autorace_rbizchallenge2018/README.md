@@ -15,4 +15,16 @@ RBiz TurtleBot3 Autonomous Driving Challenge Tool packages
 ~/catkin_ws/src/
 ```
 
-## If you need more information, please contact `rwjung@robotis.com`
+How to run rbiz_autorace system
+
+1. roscore
+
+2. Check your /dev/ttyACM number. (i.e traffic_stopwatch : /dev/ttyACM0, level_crossing : /dev/ttyACM1)
+
+3. rosrun rosserial_python serial_node.py __name:=traffic_stopwatch _port:=/dev/ttyACM0 _baud:=115200
+
+4. rosrun rosserial_python serial_node.py __name:=level_crossing _port:=/dev/ttyACM1 _baud:=115200
+
+5. rosrun rbiz_autorace_monitor rbiz_autorace_monitor  
+
+## If you need more information, please contact `kkjong@robotis.com`
