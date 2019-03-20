@@ -26,6 +26,3 @@ Sources for AutoRace Referee system
 
 [![](https://github.com/ROBOTIS-GIT/ROBOTIS-Documents/blob/master/wiki-images/AutoRace/autorace_pics/autorace_rbiz_challenge_2017_thumbnail_5.png)](https://youtu.be/dzjsLFj62HE)
 
-## AutoRace 2018 (Maybe in ROSCon2018?)
-
-## If you need more information, please contact `kkjong@robotis.com`
