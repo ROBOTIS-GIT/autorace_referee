@@ -27,4 +27,6 @@ How to run rbiz_autorace system
 
 5. rosrun rbiz_autorace_monitor rbiz_autorace_monitor  
 
+You can download autorace mission 3D file : https://docs.google.com/spreadsheets/d/1pUWFL_SShR0quUDjbueKaUGFv-jw9NO942ab4mymrxU/edit#gid=0
+
 ## If you need more information, please contact `kkjong@robotis.com`

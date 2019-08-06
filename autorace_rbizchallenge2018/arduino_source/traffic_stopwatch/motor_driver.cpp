@@ -91,7 +91,7 @@ void MotorDriver::setAccelerationLimit(uint8_t id, int64_t acceleration_limit_va
   if(dxl_comm_result != COMM_SUCCESS)
   {
     packetHandler_->getTxRxResult(dxl_comm_result);
-  }ost160401
+  }
   
   else if(dxl_error != 0)
   {
