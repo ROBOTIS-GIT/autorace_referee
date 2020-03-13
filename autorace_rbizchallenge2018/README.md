@@ -1,7 +1,7 @@
 # rbiz_autorace
 RBiz TurtleBot3 Autonomous Driving Challenge Tool packages
 
-- [linux] put `rbiz_autorace_msgs` in `arduino_lib_ros_msg` into
+- put `rbiz_autorace_msgs` in `arduino_lib_ros_msg` into
 
 ```
 [linux]
