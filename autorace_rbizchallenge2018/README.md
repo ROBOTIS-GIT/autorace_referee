@@ -1,10 +1,18 @@
 # rbiz_autorace
 RBiz TurtleBot3 Autonomous Driving Challenge Tool packages
 
-- put `rbiz_autorace_msgs` in `arduino_lib_ros_msg` into
+- [linux] put `rbiz_autorace_msgs` in `arduino_lib_ros_msg` into
 
 ```
+[linux]
+
 ~/.arduino15/packages/OpenCR/hardware/OpenCR/X.Y.Z/libraries/turtlebot3_ros_lib/
+```
+
+```
+[window]
+
+C:\Users\User_name\Documents\ArduinoData\packages\OpenCR\hardware\OpenCR\X.Y.Z\libraries\turtlebot3_ros_lib
 ```
 
 - upload each source in the folder `arduino_source` into each OpenCR
@@ -16,6 +24,8 @@ RBiz TurtleBot3 Autonomous Driving Challenge Tool packages
 ```
 
 How to run rbiz_autorace system
+
+NOTE: This instructions were tested on Ubuntu 16.04 and ROS Kinetic Kame.
 
 1. roscore
 
