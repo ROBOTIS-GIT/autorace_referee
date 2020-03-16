@@ -17,6 +17,7 @@
 #define DXL_POSITION_VALUE_OPENED       2048              // and this value (note that the Dynamixel would not move when the position value is out of movable range. Check e-manual about the range of the Dynamixel you use.)
 #define DXL_POSITION_VALUE_MIDDLE       2560              // (this is just for the test)
 #define DXL_POSITION_VALUE_SUCCESS      2200
+
 /*******************************************************************************
 * Classes
 *******************************************************************************/
@@ -28,13 +29,13 @@ MotorDriver motorDriver;
 /*******************************************************************************
 * Variables
 *******************************************************************************/
-// static uint16_t sensor_distance[3] = {0, 0, 0};
 static uint16_t sensor_distance[3];// = {SENSOR_DISTANCE_INIT_VALUE, SENSOR_DISTANCE_INIT_VALUE, SENSOR_DISTANCE_INIT_VALUE};
 static uint32_t pre_time;
 double stopwatch_start_time_;
 bool is_started[3];
 bool is_able_to_pass_;
 uint8_t level_turn_ = 1;
+
 /*******************************************************************************
 * Enum
 *******************************************************************************/
@@ -50,12 +51,9 @@ void fnReceiveSensorDistance();
 void fnCheckVehicleStatus();
 void fnLevelControl();
 void fnInitStateLevelCrossing();
-
-
 double fnGetCurrentTime();
 
 void fnSetStopWatch();
-
 
 /*******************************************************************************
 * Publish function

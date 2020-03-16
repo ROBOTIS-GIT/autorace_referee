@@ -22,8 +22,6 @@
 #include <DynamixelSDK.h>
 
 // Control table address (Dynamixel X-series)
-// #define ADDR_X_ACCELERATION_LIMIT       40
-// #define ADDR_X_VELOCITY_LIMIT           44
 #define ADDR_X_TORQUE_ENABLE            64
 #define ADDR_X_GOAL_VELOCITY            104
 #define ADDR_X_PROFILE_ACCELERATION     108
@@ -74,9 +72,7 @@ class MotorDriver
   void setProfileAcceleration(uint8_t id, int64_t profile_acceleration_value);
   void setProfileVelocity(uint8_t id, int64_t profile_velocity_value);
   void controlPosition(uint8_t id, int64_t position_value);
-  // bool readEncoder(int32_t &left_value, int32_t &right_value);
-  // bool speedControl(int64_t left_wheel_value, int64_t right_wheel_value);
-
+ 
  private:
   uint32_t baudrate_;
   float  protocol_version_;
@@ -85,9 +81,6 @@ class MotorDriver
 
   dynamixel::PortHandler *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
-
-  // dynamixel::GroupSyncWrite *groupSyncWriteVelocity_;
-  // dynamixel::GroupSyncRead *groupSyncReadEncoder_;
 };
 
 #endif // TURTLEBOT3_MOTOR_DRIVER_H_

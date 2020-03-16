@@ -27,6 +27,7 @@ author : Leon Ryuwoon Jung
 * Subscriber
 *******************************************************************************/
 ros::Subscriber<rbiz_autorace_msgs::SensorStateStopwatch> msgSensorStateStopwatch("sensor_state/stopwatch", callBack);
+
 /*******************************************************************************
 * Publisher
 *******************************************************************************/
@@ -86,7 +87,6 @@ void loop()
 /*******************************************************************************
 * Callback function
 *******************************************************************************/
-
 void cbInitStateLevelCrossing(const rbiz_autorace_msgs::DoIt& msgInitStateLevelCrossing)
 {
   if (msgInitStateLevelCrossing.doIt == true)
@@ -106,7 +106,6 @@ void cbTestStateLevelCrossing(const rbiz_autorace_msgs::DoIt& msgTestStateLevelC
 /*******************************************************************************
 * Normal function
 *******************************************************************************/
-
 void fnGetButtonPressed()
 {
   if (ollo.read(4, TOUCH_SENSOR))

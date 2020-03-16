@@ -11,8 +11,8 @@
 *******************************************************************************/
 #define DISTANCE_THRESHOLD_PASS         500
 
-#define DXL_ID_1                          1               // right sign
-#define DXL_ID_2                          2               // left sign
+#define DXL_ID_1           1                 // right sign
+#define DXL_ID_2           2                 // left sign
 #define DXL_1_UP           2048              // Dynamixel will rotate between this value
 #define DXL_1_DOWN         3048              // and this value (note that the Dynamixel would not move when the position value is out of movable range. Check e-manual about the range of the Dynamixel you use.)
 #define DXL_2_UP           2048              // (this is just for the test)
@@ -48,6 +48,7 @@ bool mission_trigger;
 bool mission_start;
 bool level_trigger;
 bool stopwatch_trigger;
+
 /*******************************************************************************
 * Enum
 *******************************************************************************/
@@ -57,6 +58,7 @@ static enum Mode  { READY_MODE, TRAINING_MODE, MATCH_MODE, FINISH_MODE } mode_;
 static enum Mission_State { READY, TRAINING_START, TRAINING_FINISH, MATCH_START, MATCH_FINISH } mission_state_;
 static enum Level { LEVEL_CLOSED, LEVEL_OPENED, LEVEL_MIDDLE } level_status_;
 static enum Stopwatch_State {SETUP, TRANINIG_TIMEOUT, MATCH_TIMEOUT } stopWatchState_;
+
 /*******************************************************************************
 * Functions
 *******************************************************************************/
@@ -75,6 +77,7 @@ void fnSetStopWatch();
 void pbSensorState();
 void resetCallback(const std_msgs::Bool& reset_msg);
 void stateCallback(const std_msgs::Int8& state_msg);
+
 /*******************************************************************************
 * Callback function for InitStateTrafficLight msg
 *******************************************************************************/

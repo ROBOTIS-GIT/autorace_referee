@@ -62,8 +62,6 @@ bool MotorDriver::init(void)
     return false;
   }
 
-  // setVelocityLimit(motor_id_, Pw_, PROFILE_ACCELERATION_VALUE);
-
   // Enable Dynamixel Torque
   setTorque(motor_id_1, true);
 
@@ -74,10 +72,6 @@ bool MotorDriver::init(void)
 
   setProfileVelocity(motor_id_2, PROFILE_VELOCITY_VALUE);
   setProfileAcceleration(motor_id_2, PROFILE_ACCELERATION_VALUE);
-
-  // controlPosition(motor_id_, 2048);
-  // groupSyncWriteVelocity_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, ADDR_X_GOAL_VELOCITY, LEN_X_GOAL_VELOCITY);
-  // groupSyncReadEncoder_   = new dynamixel::GroupSyncRead(portHandler_, packetHandler_, ADDR_X_PRESENT_POSITION, LEN_X_PRESENT_POSITION);
 
   return true;
 }
@@ -169,47 +163,11 @@ void MotorDriver::closeDynamixel(void)
   // Disable Dynamixel Torque
   setTorque(motor_id_1, false);
   setTorque(motor_id_2, false);
+  
   // Close port
   portHandler_->closePort();
 }
 
-// bool MotorDriver::readEncoder(int32_t &left_value, int32_t &right_value)
-// {
-//   int dxl_comm_result = COMM_TX_FAIL;              // Communication result
-//   bool dxl_addparam_result = false;                // addParam result
-//   bool dxl_getdata_result = false;                 // GetParam result
-//
-//   // Set parameter
-//   dxl_addparam_result = groupSyncReadEncoder_->addParam(motor_id_);
-//   if (dxl_addparam_result != true)
-//     return false;
-//
-//   dxl_addparam_result = groupSyncReadEncoder_->addParam(right_wheel_id_);
-//   if (dxl_addparam_result != true)
-//     return false;
-//
-//   // Syncread present position
-//   dxl_comm_result = groupSyncReadEncoder_->txRxPacket();
-//   if (dxl_comm_result != COMM_SUCCESS)
-//     packetHandler_->printTxRxResult(dxl_comm_result);
-//
-//   // Check if groupSyncRead data of Dynamixels are available
-//   dxl_getdata_result = groupSyncReadEncoder_->isAvailable(motor_id_, ADDR_X_PRESENT_POSITION, LEN_X_PRESENT_POSITION);
-//   if (dxl_getdata_result != true)
-//     return false;
-//
-//   dxl_getdata_result = groupSyncReadEncoder_->isAvailable(right_wheel_id_, ADDR_X_PRESENT_POSITION, LEN_X_PRESENT_POSITION);
-//   if (dxl_getdata_result != true)
-//     return false;
-//
-//   // Get data
-//   left_value  = groupSyncReadEncoder_->getData(motor_id_,  ADDR_X_PRESENT_POSITION, LEN_X_PRESENT_POSITION);
-//   right_value = groupSyncReadEncoder_->getData(right_wheel_id_, ADDR_X_PRESENT_POSITION, LEN_X_PRESENT_POSITION);
-//
-//   groupSyncReadEncoder_->clearParam();
-//   return true;
-// }
-//
 void MotorDriver::controlPosition(uint8_t id, int64_t position_value)
 {
   uint8_t dxl_error = 0;
