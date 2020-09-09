@@ -25,7 +25,7 @@ C:\Users\User_name\Documents\ArduinoData\packages\OpenCR\hardware\OpenCR\X.Y.Z\l
 
 How to run rbiz_autorace system
 
-NOTE: This instructions were tested on Ubuntu 16.04 and ROS Kinetic Kame.
+NOTE: This package were tested on Ubuntu 16.04 and ROS Kinetic Kame.
 
 1. roscore
 
